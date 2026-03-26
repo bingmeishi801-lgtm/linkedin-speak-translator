@@ -17,14 +17,30 @@ type HistoryItem = Resp & {
 
 const HISTORY_KEY = "lst_history_v1";
 
+const INPUT_TEMPLATES = [
+  {
+    key: "comment-reply",
+    label: "评论回复",
+    text: "Great post. I especially liked your point on balancing speed and quality in product iteration. What metric do you prioritize first when trade-offs happen?",
+  },
+  {
+    key: "dm-reply",
+    label: "私信回复",
+    text: "Hi [Name], thanks for reaching out. I’m currently exploring AI product opportunities in global markets. Happy to connect and exchange ideas.",
+  },
+  {
+    key: "job-outreach",
+    label: "求职沟通",
+    text: "Hi [Name], I’ve been following your work on [Company/Product]. I’m interested in roles related to AI product building and growth. Would love to learn more about your team’s priorities.",
+  },
+];
+
 export default function AppPage() {
   const [text, setText] = useState("");
   const [draftReply, setDraftReply] = useState("");
   const [tone, setTone] = useState<Tone>("professional");
   const [loading, setLoading] = useState(false);
-  const [checking, setChecking] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [healthMsg, setHealthMsg] = useState<string>("");
   const [data, setData] = useState<Resp | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [activeHistoryId, setActiveHistoryId] = useState<string>("");
@@ -60,22 +76,9 @@ export default function AppPage() {
     setTimeout(() => setToast(""), 1800);
   };
 
-  const checkHealth = async () => {
-    setHealthMsg("");
-    setChecking(true);
-    try {
-      const res = await fetch("/api/health");
-      const json = await res.json();
-      if (res.ok && json?.ok) {
-        setHealthMsg(`✅ ${json.message} (${json.model})`);
-      } else {
-        setHealthMsg(`❌ ${json?.message || "Health check failed"}`);
-      }
-    } catch {
-      setHealthMsg("❌ Health check failed due to network error.");
-    } finally {
-      setChecking(false);
-    }
+  const applyTemplate = (value: string) => {
+    setText(value);
+    setError(null);
   };
 
   const run = async () => {
@@ -144,21 +147,43 @@ export default function AppPage() {
     if (activeHistoryId === id) setActiveHistoryId("");
   };
 
+  const updateTranslation = (value: string) => {
+    setData((prev) => (prev ? { ...prev, translation: value } : prev));
+  };
+
+  const updateSuggestion = (idx: number, value: string) => {
+    setData((prev) => {
+      if (!prev) return prev;
+      const next = [...prev.suggestions];
+      next[idx] = value;
+      return { ...prev, suggestions: next };
+    });
+  };
+
+  const updatePolishedReply = (value: string) => {
+    setData((prev) => (prev ? { ...prev, polishedReply: value } : prev));
+  };
+
   return (
     <main className="mx-auto grid max-w-6xl gap-4 px-4 py-6 sm:gap-6 sm:px-6 sm:py-8 lg:grid-cols-3">
       <section className="space-y-4 rounded-2xl border border-line bg-card p-4 sm:p-5 lg:col-span-2">
         <h2 className="text-xl font-semibold sm:text-2xl">Translator Workspace</h2>
         <p className="text-sm text-slate-300">Paste LinkedIn text, choose tone, then get translation and reply suggestions.</p>
 
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <button
-            className="w-full rounded-xl border border-slate-500 bg-slate-900 px-4 py-2 text-sm font-medium text-slate-100 hover:border-blue-400 sm:w-auto"
-            onClick={checkHealth}
-            disabled={checking}
-          >
-            {checking ? "Checking key..." : "Check API Key"}
-          </button>
-          {healthMsg && <p className="text-xs text-slate-300">{healthMsg}</p>}
+        <div>
+          <label className="mb-2 block text-sm text-slate-300">快捷输入模板</label>
+          <div className="flex flex-wrap gap-2">
+            {INPUT_TEMPLATES.map((t) => (
+              <button
+                key={t.key}
+                type="button"
+                className="rounded-full border border-slate-600 bg-slate-900 px-3 py-1.5 text-xs text-slate-200 hover:border-blue-400"
+                onClick={() => applyTemplate(t.text)}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div>
@@ -207,16 +232,20 @@ export default function AppPage() {
           <div className="space-y-4 rounded-xl border border-slate-600 bg-slate-900/60 p-4">
             <div>
               <div className="mb-2 flex items-center justify-between">
-                <h3 className="font-semibold">Translation</h3>
+                <h3 className="font-semibold">Translation（可编辑）</h3>
                 <button className="text-sm text-blue-300" onClick={() => copy("translation", data.translation)}>
                   {copiedKey === "translation" ? "Copied ✓" : "Copy"}
                 </button>
               </div>
-              <p className="text-slate-200">{data.translation}</p>
+              <textarea
+                className="h-24 w-full rounded-lg border border-slate-700 bg-slate-950 p-3 text-slate-200 outline-none focus:border-blue-400"
+                value={data.translation}
+                onChange={(e) => updateTranslation(e.target.value)}
+              />
             </div>
 
             <div>
-              <h3 className="mb-2 font-semibold">Reply Suggestions</h3>
+              <h3 className="mb-2 font-semibold">Reply Suggestions（可编辑）</h3>
               <div className="space-y-2">
                 {data.suggestions.map((s, i) => (
                   <div key={i} className="rounded-lg border border-slate-700 bg-slate-950 p-3">
@@ -226,7 +255,11 @@ export default function AppPage() {
                         {copiedKey === `s-${i}` ? "Copied ✓" : "Copy"}
                       </button>
                     </div>
-                    <p>{s}</p>
+                    <textarea
+                      className="h-20 w-full rounded-lg border border-slate-800 bg-slate-900 p-2 outline-none focus:border-blue-400"
+                      value={s}
+                      onChange={(e) => updateSuggestion(i, e.target.value)}
+                    />
                   </div>
                 ))}
               </div>
@@ -234,12 +267,16 @@ export default function AppPage() {
 
             <div>
               <div className="mb-2 flex items-center justify-between">
-                <h3 className="font-semibold">Polished Reply</h3>
+                <h3 className="font-semibold">Polished Reply（可编辑）</h3>
                 <button className="text-sm text-blue-300" onClick={() => copy("polished", data.polishedReply)}>
                   {copiedKey === "polished" ? "Copied ✓" : "Copy"}
                 </button>
               </div>
-              <p className="text-slate-200">{data.polishedReply}</p>
+              <textarea
+                className="h-24 w-full rounded-lg border border-slate-700 bg-slate-950 p-3 text-slate-200 outline-none focus:border-blue-400"
+                value={data.polishedReply}
+                onChange={(e) => updatePolishedReply(e.target.value)}
+              />
             </div>
           </div>
         )}
