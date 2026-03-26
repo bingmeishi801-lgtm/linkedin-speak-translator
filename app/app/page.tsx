@@ -284,7 +284,7 @@ export default function AppPage() {
       </div>
 
       <section className="soft-card mt-5 p-4 sm:p-5">
-        <h3 className="mb-3 text-lg font-semibold">History (last 20)</h3>
+        <h3 className="mb-3 text-lg font-semibold">History</h3>
         <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
           {history.length === 0 && <p className="text-sm text-slate-400">No history yet.</p>}
           {history.map((h) => {
