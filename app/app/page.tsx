@@ -22,7 +22,9 @@ export default function AppPage() {
   const [draftReply, setDraftReply] = useState("");
   const [tone, setTone] = useState<Tone>("professional");
   const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [healthMsg, setHealthMsg] = useState<string>("");
   const [data, setData] = useState<Resp | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [activeHistoryId, setActiveHistoryId] = useState<string>("");
@@ -56,6 +58,24 @@ export default function AppPage() {
     setToast("Copied ✓");
     setTimeout(() => setCopiedKey(""), 1800);
     setTimeout(() => setToast(""), 1800);
+  };
+
+  const checkHealth = async () => {
+    setHealthMsg("");
+    setChecking(true);
+    try {
+      const res = await fetch("/api/health");
+      const json = await res.json();
+      if (res.ok && json?.ok) {
+        setHealthMsg(`✅ ${json.message} (${json.model})`);
+      } else {
+        setHealthMsg(`❌ ${json?.message || "Health check failed"}`);
+      }
+    } catch {
+      setHealthMsg("❌ Health check failed due to network error.");
+    } finally {
+      setChecking(false);
+    }
   };
 
   const run = async () => {
@@ -129,6 +149,17 @@ export default function AppPage() {
       <section className="space-y-4 rounded-2xl border border-line bg-card p-4 sm:p-5 lg:col-span-2">
         <h2 className="text-xl font-semibold sm:text-2xl">Translator Workspace</h2>
         <p className="text-sm text-slate-300">Paste LinkedIn text, choose tone, then get translation and reply suggestions.</p>
+
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <button
+            className="w-full rounded-xl border border-slate-500 bg-slate-900 px-4 py-2 text-sm font-medium text-slate-100 hover:border-blue-400 sm:w-auto"
+            onClick={checkHealth}
+            disabled={checking}
+          >
+            {checking ? "Checking key..." : "Check API Key"}
+          </button>
+          {healthMsg && <p className="text-xs text-slate-300">{healthMsg}</p>}
+        </div>
 
         <div>
           <label className="mb-2 block text-sm text-slate-300">LinkedIn Text</label>
