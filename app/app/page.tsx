@@ -158,8 +158,6 @@ export default function AppPage() {
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="section-title">LinkedIn Speak Translator</p>
-          <h1 className="mt-1 text-2xl font-bold sm:text-3xl">UI V2 · Better look, same core flow</h1>
-          <p className="mt-2 text-sm text-slate-300">Translate, generate replies, copy fast. Optimized visual hierarchy for daily use.</p>
         </div>
       </div>
 
