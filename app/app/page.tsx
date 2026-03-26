@@ -46,7 +46,8 @@ export default function AppPage() {
   const [activeHistoryId, setActiveHistoryId] = useState<string>("");
   const [copiedKey, setCopiedKey] = useState<string>("");
   const [toast, setToast] = useState<string>("");
-  const timersRef = useRef<number[]>([]);
+  const copiedTimeoutRef = useRef<number | null>(null);
+  const toastTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     const raw = localStorage.getItem(HISTORY_KEY);
@@ -61,8 +62,8 @@ export default function AppPage() {
 
   useEffect(() => {
     return () => {
-      timersRef.current.forEach((t) => window.clearTimeout(t));
-      timersRef.current = [];
+      if (copiedTimeoutRef.current) window.clearTimeout(copiedTimeoutRef.current);
+      if (toastTimeoutRef.current) window.clearTimeout(toastTimeoutRef.current);
     };
   }, []);
 
@@ -76,17 +77,16 @@ export default function AppPage() {
     return len >= 2 && len <= 2000;
   }, [text]);
 
-  const safeSetTimeout = (fn: () => void, ms: number) => {
-    const id = window.setTimeout(fn, ms);
-    timersRef.current.push(id);
-  };
-
   const copy = async (key: string, value: string) => {
     await navigator.clipboard.writeText(value);
     setCopiedKey(key);
     setToast("Copied ✓");
-    safeSetTimeout(() => setCopiedKey(""), 1500);
-    safeSetTimeout(() => setToast(""), 1500);
+
+    if (copiedTimeoutRef.current) window.clearTimeout(copiedTimeoutRef.current);
+    if (toastTimeoutRef.current) window.clearTimeout(toastTimeoutRef.current);
+
+    copiedTimeoutRef.current = window.setTimeout(() => setCopiedKey(""), 1500);
+    toastTimeoutRef.current = window.setTimeout(() => setToast(""), 1500);
   };
 
   const applyTemplate = (value: string) => {
