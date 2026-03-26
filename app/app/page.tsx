@@ -20,17 +20,17 @@ const HISTORY_KEY = "lst_history_v1";
 const INPUT_TEMPLATES = [
   {
     key: "comment-reply",
-    label: "评论回复",
+    label: "Comment reply",
     text: "Great post. I especially liked your point on balancing speed and quality in product iteration. What metric do you prioritize first when trade-offs happen?",
   },
   {
     key: "dm-reply",
-    label: "私信回复",
+    label: "DM reply",
     text: "Hi [Name], thanks for reaching out. I’m currently exploring AI product opportunities in global markets. Happy to connect and exchange ideas.",
   },
   {
     key: "job-outreach",
-    label: "求职沟通",
+    label: "Job outreach",
     text: "Hi [Name], I’ve been following your work on [Company/Product]. I’m interested in roles related to AI product building and growth. Would love to learn more about your team’s priorities.",
   },
 ];
@@ -155,21 +155,19 @@ export default function AppPage() {
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="section-title">LinkedIn Speak Translator</p>
-        </div>
+      <div className="mb-6">
+        <p className="section-title">LinkedIn English Assistant</p>
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-[1.25fr,1fr]">
+      <div className="grid gap-5 xl:grid-cols-[1.2fr,1fr]">
         <section className="soft-card p-4 sm:p-5">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold sm:text-xl">Input</h2>
-            <span className="rounded-full border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs text-slate-300">MVP</span>
+            <span className="rounded-full border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs text-slate-300">Tool</span>
           </div>
 
           <div>
-            <label className="mb-2 block text-sm text-slate-300">快捷输入模板</label>
+            <label className="mb-2 block text-sm font-medium text-slate-200">Quick templates</label>
             <div className="flex flex-wrap gap-2">
               {INPUT_TEMPLATES.map((t) => (
                 <button
@@ -185,7 +183,8 @@ export default function AppPage() {
           </div>
 
           <div className="mt-4">
-            <label className="mb-2 block text-sm text-slate-300">LinkedIn Text</label>
+            <label className="mb-2 block text-sm font-medium text-slate-200">1. Paste LinkedIn text</label>
+            <p className="mb-2 text-sm text-slate-400">Paste a post, comment, or DM in English</p>
             <textarea
               className="h-44 w-full rounded-xl border border-slate-600 bg-slate-950/80 p-3 outline-none transition focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
               value={text}
@@ -196,31 +195,34 @@ export default function AppPage() {
           </div>
 
           <div className="mt-4">
-            <label className="mb-2 block text-sm text-slate-300">Your Draft Reply (optional)</label>
+            <label className="mb-2 block text-sm font-medium text-slate-200">2. Add your rough reply (optional)</label>
             <textarea
               className="h-28 w-full rounded-xl border border-slate-600 bg-slate-950/80 p-3 outline-none transition focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
               value={draftReply}
               onChange={(e) => setDraftReply(e.target.value)}
-              placeholder="Type your rough reply, we’ll polish it..."
+              placeholder="Type your rough reply here. We’ll polish it into natural English."
             />
           </div>
 
           <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <select
-              className="w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 sm:w-auto"
-              value={tone}
-              onChange={(e) => setTone(e.target.value as Tone)}
-            >
-              <option value="professional">Professional</option>
-              <option value="friendly">Friendly</option>
-              <option value="casual">Casual</option>
-            </select>
+            <div className="w-full sm:w-auto">
+              <label className="mb-2 block text-sm font-medium text-slate-200">3. Choose tone</label>
+              <select
+                className="w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 sm:w-auto"
+                value={tone}
+                onChange={(e) => setTone(e.target.value as Tone)}
+              >
+                <option value="professional">Professional</option>
+                <option value="friendly">Friendly</option>
+                <option value="casual">Casual</option>
+              </select>
+            </div>
             <button
-              className="w-full rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 px-4 py-2 font-semibold text-white transition hover:from-blue-400 hover:to-indigo-400 disabled:opacity-50 sm:w-auto"
+              className="mt-0 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 px-4 py-2 font-semibold text-white transition hover:from-blue-400 hover:to-indigo-400 disabled:opacity-50 sm:mt-6"
               disabled={loading || !canSubmit}
               onClick={run}
             >
-              {loading ? "Processing..." : "Translate & Suggest"}
+              {loading ? "Generating..." : "Generate reply"}
             </button>
           </div>
 
@@ -236,13 +238,13 @@ export default function AppPage() {
 
           {!data ? (
             <div className="glass rounded-xl p-5 text-sm text-slate-300">
-              Paste text and click <strong>Translate & Suggest</strong>. Results will appear here.
+              Paste text and click <strong>Generate reply</strong>. Results will appear here.
             </div>
           ) : (
             <div className="space-y-4">
               <div className="glass rounded-xl p-4">
                 <div className="mb-2 flex items-center justify-between">
-                  <h3 className="font-semibold">Translation</h3>
+                  <h3 className="font-semibold">Chinese meaning</h3>
                   <button className="text-sm text-blue-300" onClick={() => copy("translation", data.translation)}>
                     {copiedKey === "translation" ? "Copied ✓" : "Copy"}
                   </button>
@@ -250,26 +252,39 @@ export default function AppPage() {
                 <p className="leading-7 text-slate-100">{data.translation}</p>
               </div>
 
-              <div className="space-y-2">
-                {data.suggestions.map((s, i) => (
-                  <div key={i} className="glass rounded-xl p-4">
-                    <div className="mb-1 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-slate-400">Suggestion {i + 1}</span>
-                        {i === 0 && <span className="rounded-full bg-blue-500/20 px-2 py-0.5 text-[10px] text-blue-200">Best</span>}
-                      </div>
-                      <button className="text-sm text-blue-300" onClick={() => copy(`s-${i}`, s)}>
-                        {copiedKey === `s-${i}` ? "Copied ✓" : "Copy"}
-                      </button>
-                    </div>
-                    <p className="leading-7 text-slate-100">{s}</p>
-                  </div>
-                ))}
+              <div className="glass rounded-xl p-4">
+                <div className="mb-2 flex items-center justify-between">
+                  <h3 className="font-semibold">Professional reply</h3>
+                  <button className="text-sm text-blue-300" onClick={() => copy("s-0", data.suggestions[0] || "")}>
+                    {copiedKey === "s-0" ? "Copied ✓" : "Copy"}
+                  </button>
+                </div>
+                <p className="leading-7 text-slate-100">{data.suggestions[0]}</p>
               </div>
 
               <div className="glass rounded-xl p-4">
                 <div className="mb-2 flex items-center justify-between">
-                  <h3 className="font-semibold">Polished Reply</h3>
+                  <h3 className="font-semibold">Friendly reply</h3>
+                  <button className="text-sm text-blue-300" onClick={() => copy("s-1", data.suggestions[1] || "")}>
+                    {copiedKey === "s-1" ? "Copied ✓" : "Copy"}
+                  </button>
+                </div>
+                <p className="leading-7 text-slate-100">{data.suggestions[1]}</p>
+              </div>
+
+              <div className="glass rounded-xl p-4">
+                <div className="mb-2 flex items-center justify-between">
+                  <h3 className="font-semibold">Casual reply</h3>
+                  <button className="text-sm text-blue-300" onClick={() => copy("s-2", data.suggestions[2] || "")}>
+                    {copiedKey === "s-2" ? "Copied ✓" : "Copy"}
+                  </button>
+                </div>
+                <p className="leading-7 text-slate-100">{data.suggestions[2]}</p>
+              </div>
+
+              <div className="glass rounded-xl p-4">
+                <div className="mb-2 flex items-center justify-between">
+                  <h3 className="font-semibold">Polished final draft</h3>
                   <button className="text-sm text-blue-300" onClick={() => copy("polished", data.polishedReply)}>
                     {copiedKey === "polished" ? "Copied ✓" : "Copy"}
                   </button>
@@ -282,7 +297,7 @@ export default function AppPage() {
       </div>
 
       <section className="soft-card mt-5 p-4 sm:p-5">
-        <h3 className="mb-3 text-lg font-semibold">History</h3>
+        <h3 className="mb-3 text-lg font-semibold">Recent drafts</h3>
         <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
           {history.length === 0 && <p className="text-sm text-slate-400">No history yet.</p>}
           {history.map((h) => {
@@ -292,7 +307,7 @@ export default function AppPage() {
                 key={h.id}
                 className={`rounded-xl border p-3 ${active ? "border-blue-400 bg-blue-950/40" : "border-slate-700 bg-slate-900/70"}`}
               >
-                <p className="line-clamp-3 text-sm text-slate-200">{h.text}</p>
+                <p className="line-clamp-1 text-sm text-slate-200">{h.text}</p>
                 <p className="mt-1 text-xs text-slate-400">{new Date(h.createdAt).toLocaleString()}</p>
                 <div className="mt-2 flex gap-3">
                   <button className="text-xs text-blue-300" onClick={() => useHistory(h)}>
