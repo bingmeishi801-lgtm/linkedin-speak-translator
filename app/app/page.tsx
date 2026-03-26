@@ -148,123 +148,147 @@ export default function AppPage() {
   };
 
   return (
-    <main className="mx-auto grid max-w-6xl gap-4 px-4 py-6 sm:gap-6 sm:px-6 sm:py-8 lg:grid-cols-3">
-      <section className="space-y-4 rounded-2xl border border-line bg-card p-4 sm:p-5 lg:col-span-2">
-        <h2 className="text-xl font-semibold sm:text-2xl">Translator Workspace</h2>
-        <p className="text-sm text-slate-300">Paste LinkedIn text, choose tone, then get translation and reply suggestions.</p>
-
+    <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <label className="mb-2 block text-sm text-slate-300">快捷输入模板</label>
-          <div className="flex flex-wrap gap-2">
-            {INPUT_TEMPLATES.map((t) => (
-              <button
-                key={t.key}
-                type="button"
-                className="rounded-full border border-slate-600 bg-slate-900 px-3 py-1.5 text-xs text-slate-200 hover:border-blue-400"
-                onClick={() => applyTemplate(t.text)}
-              >
-                {t.label}
-              </button>
-            ))}
+          <p className="section-title">LinkedIn Speak Translator</p>
+          <h1 className="mt-1 text-2xl font-bold sm:text-3xl">UI V2 · Better look, same core flow</h1>
+          <p className="mt-2 text-sm text-slate-300">Translate, generate replies, copy fast. Optimized visual hierarchy for daily use.</p>
+        </div>
+      </div>
+
+      <div className="grid gap-5 xl:grid-cols-[1.25fr,1fr]">
+        <section className="soft-card p-4 sm:p-5">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-lg font-semibold sm:text-xl">Input</h2>
+            <span className="rounded-full border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs text-slate-300">MVP</span>
           </div>
-        </div>
 
-        <div>
-          <label className="mb-2 block text-sm text-slate-300">LinkedIn Text</label>
-          <textarea
-            className="h-40 w-full rounded-xl border border-slate-600 bg-slate-900 p-3 outline-none focus:border-blue-400 sm:h-44"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Paste post/comment/DM here..."
-          />
-          <p className="mt-1 text-xs text-slate-400">{text.length}/2000</p>
-        </div>
-
-        <div>
-          <label className="mb-2 block text-sm text-slate-300">Your Draft Reply (optional)</label>
-          <textarea
-            className="h-24 w-full rounded-xl border border-slate-600 bg-slate-900 p-3 outline-none focus:border-blue-400"
-            value={draftReply}
-            onChange={(e) => setDraftReply(e.target.value)}
-            placeholder="Type your rough reply, we’ll polish it..."
-          />
-        </div>
-
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <select
-            className="w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 sm:w-auto"
-            value={tone}
-            onChange={(e) => setTone(e.target.value as Tone)}
-          >
-            <option value="professional">Professional</option>
-            <option value="friendly">Friendly</option>
-            <option value="casual">Casual</option>
-          </select>
-          <button
-            className="w-full rounded-xl bg-blue-500 px-4 py-2 font-semibold text-white disabled:opacity-50 sm:w-auto"
-            disabled={loading || !canSubmit}
-            onClick={run}
-          >
-            {loading ? "Processing..." : "Translate & Suggest"}
-          </button>
-        </div>
-
-        {error && <p className="text-sm text-red-400">{error}</p>}
-
-        {data && (
-          <div className="space-y-4 rounded-xl border border-slate-600 bg-slate-900/60 p-4">
-            <div>
-              <div className="mb-2 flex items-center justify-between">
-                <h3 className="font-semibold">Translation</h3>
-                <button className="text-sm text-blue-300" onClick={() => copy("translation", data.translation)}>
-                  {copiedKey === "translation" ? "Copied ✓" : "Copy"}
+          <div>
+            <label className="mb-2 block text-sm text-slate-300">快捷输入模板</label>
+            <div className="flex flex-wrap gap-2">
+              {INPUT_TEMPLATES.map((t) => (
+                <button
+                  key={t.key}
+                  type="button"
+                  className="rounded-full border border-slate-600 bg-slate-900 px-3 py-1.5 text-xs text-slate-200 transition hover:border-blue-400 hover:text-white"
+                  onClick={() => applyTemplate(t.text)}
+                >
+                  {t.label}
                 </button>
-              </div>
-              <p className="rounded-lg border border-slate-700 bg-slate-950 p-3 text-slate-200">{data.translation}</p>
+              ))}
             </div>
+          </div>
 
-            <div>
-              <h3 className="mb-2 font-semibold">Reply Suggestions</h3>
+          <div className="mt-4">
+            <label className="mb-2 block text-sm text-slate-300">LinkedIn Text</label>
+            <textarea
+              className="h-44 w-full rounded-xl border border-slate-600 bg-slate-950/80 p-3 outline-none transition focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Paste post/comment/DM here..."
+            />
+            <p className="mt-1 text-xs text-slate-400">{text.length}/2000</p>
+          </div>
+
+          <div className="mt-4">
+            <label className="mb-2 block text-sm text-slate-300">Your Draft Reply (optional)</label>
+            <textarea
+              className="h-28 w-full rounded-xl border border-slate-600 bg-slate-950/80 p-3 outline-none transition focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+              value={draftReply}
+              onChange={(e) => setDraftReply(e.target.value)}
+              placeholder="Type your rough reply, we’ll polish it..."
+            />
+          </div>
+
+          <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <select
+              className="w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 sm:w-auto"
+              value={tone}
+              onChange={(e) => setTone(e.target.value as Tone)}
+            >
+              <option value="professional">Professional</option>
+              <option value="friendly">Friendly</option>
+              <option value="casual">Casual</option>
+            </select>
+            <button
+              className="w-full rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 px-4 py-2 font-semibold text-white transition hover:from-blue-400 hover:to-indigo-400 disabled:opacity-50 sm:w-auto"
+              disabled={loading || !canSubmit}
+              onClick={run}
+            >
+              {loading ? "Processing..." : "Translate & Suggest"}
+            </button>
+          </div>
+
+          {error && (
+            <div className="mt-3 rounded-xl border border-red-500/40 bg-red-500/10 p-3 text-sm text-red-300">
+              {error}
+            </div>
+          )}
+        </section>
+
+        <section className="soft-card p-4 sm:p-5">
+          <h2 className="mb-4 text-lg font-semibold sm:text-xl">Output</h2>
+
+          {!data ? (
+            <div className="glass rounded-xl p-5 text-sm text-slate-300">
+              Paste text and click <strong>Translate & Suggest</strong>. Results will appear here.
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="glass rounded-xl p-4">
+                <div className="mb-2 flex items-center justify-between">
+                  <h3 className="font-semibold">Translation</h3>
+                  <button className="text-sm text-blue-300" onClick={() => copy("translation", data.translation)}>
+                    {copiedKey === "translation" ? "Copied ✓" : "Copy"}
+                  </button>
+                </div>
+                <p className="leading-7 text-slate-100">{data.translation}</p>
+              </div>
+
               <div className="space-y-2">
                 {data.suggestions.map((s, i) => (
-                  <div key={i} className="rounded-lg border border-slate-700 bg-slate-950 p-3">
+                  <div key={i} className="glass rounded-xl p-4">
                     <div className="mb-1 flex items-center justify-between">
-                      <span className="text-xs text-slate-400">Suggestion {i + 1}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-slate-400">Suggestion {i + 1}</span>
+                        {i === 0 && <span className="rounded-full bg-blue-500/20 px-2 py-0.5 text-[10px] text-blue-200">Best</span>}
+                      </div>
                       <button className="text-sm text-blue-300" onClick={() => copy(`s-${i}`, s)}>
                         {copiedKey === `s-${i}` ? "Copied ✓" : "Copy"}
                       </button>
                     </div>
-                    <p>{s}</p>
+                    <p className="leading-7 text-slate-100">{s}</p>
                   </div>
                 ))}
               </div>
-            </div>
 
-            <div>
-              <div className="mb-2 flex items-center justify-between">
-                <h3 className="font-semibold">Polished Reply</h3>
-                <button className="text-sm text-blue-300" onClick={() => copy("polished", data.polishedReply)}>
-                  {copiedKey === "polished" ? "Copied ✓" : "Copy"}
-                </button>
+              <div className="glass rounded-xl p-4">
+                <div className="mb-2 flex items-center justify-between">
+                  <h3 className="font-semibold">Polished Reply</h3>
+                  <button className="text-sm text-blue-300" onClick={() => copy("polished", data.polishedReply)}>
+                    {copiedKey === "polished" ? "Copied ✓" : "Copy"}
+                  </button>
+                </div>
+                <p className="leading-7 text-slate-100">{data.polishedReply}</p>
               </div>
-              <p className="rounded-lg border border-slate-700 bg-slate-950 p-3 text-slate-200">{data.polishedReply}</p>
             </div>
-          </div>
-        )}
-      </section>
+          )}
+        </section>
+      </div>
 
-      <aside className="space-y-3 rounded-2xl border border-line bg-card p-4 sm:p-5">
-        <h3 className="text-lg font-semibold">History (last 20)</h3>
-        <div className="max-h-[560px] space-y-2 overflow-auto pr-1 sm:max-h-[680px]">
+      <section className="soft-card mt-5 p-4 sm:p-5">
+        <h3 className="mb-3 text-lg font-semibold">History (last 20)</h3>
+        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
           {history.length === 0 && <p className="text-sm text-slate-400">No history yet.</p>}
           {history.map((h) => {
             const active = activeHistoryId === h.id;
             return (
               <div
                 key={h.id}
-                className={`rounded-lg border p-3 ${active ? "border-blue-400 bg-blue-950/40" : "border-slate-700 bg-slate-900"}`}
+                className={`rounded-xl border p-3 ${active ? "border-blue-400 bg-blue-950/40" : "border-slate-700 bg-slate-900/70"}`}
               >
-                <p className="line-clamp-2 text-sm text-slate-200">{h.text}</p>
+                <p className="line-clamp-3 text-sm text-slate-200">{h.text}</p>
                 <p className="mt-1 text-xs text-slate-400">{new Date(h.createdAt).toLocaleString()}</p>
                 <div className="mt-2 flex gap-3">
                   <button className="text-xs text-blue-300" onClick={() => useHistory(h)}>
@@ -278,7 +302,7 @@ export default function AppPage() {
             );
           })}
         </div>
-      </aside>
+      </section>
 
       {toast && (
         <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 rounded-full bg-black/80 px-4 py-2 text-sm text-white shadow-lg">
