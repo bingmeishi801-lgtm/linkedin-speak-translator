@@ -45,9 +45,7 @@ export default function AppPage() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [activeHistoryId, setActiveHistoryId] = useState<string>("");
   const [copiedKey, setCopiedKey] = useState<string>("");
-  const [toast, setToast] = useState<string>("");
   const copiedTimeoutRef = useRef<number | null>(null);
-  const toastTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     const raw = localStorage.getItem(HISTORY_KEY);
@@ -63,7 +61,6 @@ export default function AppPage() {
   useEffect(() => {
     return () => {
       if (copiedTimeoutRef.current) window.clearTimeout(copiedTimeoutRef.current);
-      if (toastTimeoutRef.current) window.clearTimeout(toastTimeoutRef.current);
     };
   }, []);
 
@@ -80,13 +77,9 @@ export default function AppPage() {
   const copy = async (key: string, value: string) => {
     await navigator.clipboard.writeText(value);
     setCopiedKey(key);
-    setToast("Copied ✓");
 
     if (copiedTimeoutRef.current) window.clearTimeout(copiedTimeoutRef.current);
-    if (toastTimeoutRef.current) window.clearTimeout(toastTimeoutRef.current);
-
     copiedTimeoutRef.current = window.setTimeout(() => setCopiedKey(""), 1500);
-    toastTimeoutRef.current = window.setTimeout(() => setToast(""), 1500);
   };
 
   const applyTemplate = (value: string) => {
@@ -316,12 +309,6 @@ export default function AppPage() {
           })}
         </div>
       </section>
-
-      {toast && (
-        <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 rounded-full bg-black/80 px-4 py-2 text-sm text-white shadow-lg">
-          {toast}
-        </div>
-      )}
     </main>
   );
 }
