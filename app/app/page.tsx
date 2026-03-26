@@ -147,23 +147,6 @@ export default function AppPage() {
     if (activeHistoryId === id) setActiveHistoryId("");
   };
 
-  const updateTranslation = (value: string) => {
-    setData((prev) => (prev ? { ...prev, translation: value } : prev));
-  };
-
-  const updateSuggestion = (idx: number, value: string) => {
-    setData((prev) => {
-      if (!prev) return prev;
-      const next = [...prev.suggestions];
-      next[idx] = value;
-      return { ...prev, suggestions: next };
-    });
-  };
-
-  const updatePolishedReply = (value: string) => {
-    setData((prev) => (prev ? { ...prev, polishedReply: value } : prev));
-  };
-
   return (
     <main className="mx-auto grid max-w-6xl gap-4 px-4 py-6 sm:gap-6 sm:px-6 sm:py-8 lg:grid-cols-3">
       <section className="space-y-4 rounded-2xl border border-line bg-card p-4 sm:p-5 lg:col-span-2">
@@ -232,20 +215,16 @@ export default function AppPage() {
           <div className="space-y-4 rounded-xl border border-slate-600 bg-slate-900/60 p-4">
             <div>
               <div className="mb-2 flex items-center justify-between">
-                <h3 className="font-semibold">Translation（可编辑）</h3>
+                <h3 className="font-semibold">Translation</h3>
                 <button className="text-sm text-blue-300" onClick={() => copy("translation", data.translation)}>
                   {copiedKey === "translation" ? "Copied ✓" : "Copy"}
                 </button>
               </div>
-              <textarea
-                className="h-24 w-full rounded-lg border border-slate-700 bg-slate-950 p-3 text-slate-200 outline-none focus:border-blue-400"
-                value={data.translation}
-                onChange={(e) => updateTranslation(e.target.value)}
-              />
+              <p className="rounded-lg border border-slate-700 bg-slate-950 p-3 text-slate-200">{data.translation}</p>
             </div>
 
             <div>
-              <h3 className="mb-2 font-semibold">Reply Suggestions（可编辑）</h3>
+              <h3 className="mb-2 font-semibold">Reply Suggestions</h3>
               <div className="space-y-2">
                 {data.suggestions.map((s, i) => (
                   <div key={i} className="rounded-lg border border-slate-700 bg-slate-950 p-3">
@@ -255,11 +234,7 @@ export default function AppPage() {
                         {copiedKey === `s-${i}` ? "Copied ✓" : "Copy"}
                       </button>
                     </div>
-                    <textarea
-                      className="h-20 w-full rounded-lg border border-slate-800 bg-slate-900 p-2 outline-none focus:border-blue-400"
-                      value={s}
-                      onChange={(e) => updateSuggestion(i, e.target.value)}
-                    />
+                    <p>{s}</p>
                   </div>
                 ))}
               </div>
@@ -267,16 +242,12 @@ export default function AppPage() {
 
             <div>
               <div className="mb-2 flex items-center justify-between">
-                <h3 className="font-semibold">Polished Reply（可编辑）</h3>
+                <h3 className="font-semibold">Polished Reply</h3>
                 <button className="text-sm text-blue-300" onClick={() => copy("polished", data.polishedReply)}>
                   {copiedKey === "polished" ? "Copied ✓" : "Copy"}
                 </button>
               </div>
-              <textarea
-                className="h-24 w-full rounded-lg border border-slate-700 bg-slate-950 p-3 text-slate-200 outline-none focus:border-blue-400"
-                value={data.polishedReply}
-                onChange={(e) => updatePolishedReply(e.target.value)}
-              />
+              <p className="rounded-lg border border-slate-700 bg-slate-950 p-3 text-slate-200">{data.polishedReply}</p>
             </div>
           </div>
         )}
